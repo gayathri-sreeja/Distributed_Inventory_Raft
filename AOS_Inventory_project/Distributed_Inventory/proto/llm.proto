@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package llm;
+
+// Generic LLM service (future use)
+service LLMService {
+  rpc GetPrediction (LLMRequest) returns (LLMResponse);
+}
+
+message LLMRequest {
+  string text = 1;
+  string role = 2; // "customer" or "producer"
+  string token = 3;
+}
+
+message LLMResponse {
+  string reply = 1;
+}

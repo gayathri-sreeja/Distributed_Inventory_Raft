@@ -1,0 +1,7 @@
+{
+  "items": [
+    {"item_id": "A100", "name": "Widget", "quantity": 200},
+    {"item_id": "A200", "name": "Gadget", "quantity": 150},
+    {"item_id": "B300", "name": "Doohickey", "quantity": 75}
+  ]
+}

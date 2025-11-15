@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package inventory;
+
+// =============================
+// AUTH
+// =============================
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+enum Role {
+  UNKNOWN = 0;
+  CUSTOMER = 1;
+  PRODUCER = 2;
+}
+
+message LoginResponse {
+  bool success = 1;
+  string message = 2;
+  Role role = 3;
+  string token = 4;
+}
+
+// =============================
+// ITEM DEFINITIONS
+// =============================
+message Item {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 quantity = 4;
+  double price = 5;
+}
+
+// =============================
+// CUSTOMER RPCs
+// =============================
+message GetAllRequest {
+  string token = 1;
+}
+
+message GetAllResponse {
+  repeated Item items = 1;
+}
+
+message GetItemRequest {
+  string item_id = 1;
+  string token = 2;
+}
+
+message GetItemResponse {
+  Item item = 1;
+}
+
+message OrderItemRequest {
+  string item_id = 1;
+  int32 quantity = 2;
+  string token = 3;
+}
+
+message OrderItemResponse {
+  bool success = 1;
+  string message = 2;
+  double total_price = 3;
+}
+
+// =============================
+// PRODUCER RPCs
+// =============================
+message AddItemRequest {
+  string name = 1;
+  string description = 2;
+  int32 quantity = 3;
+  double price = 4;
+  string token = 5;
+}
+
+message AddItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message UpdateItemRequest {
+  string id = 1;
+  int32 quantity = 2;
+  double price = 3;
+  string token = 4;
+}
+
+message UpdateItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// =============================
+// LLM RPCs
+// =============================
+message LLMCustomerQueryRequest {
+  string query = 1;
+  string token = 2;
+}
+
+message LLMCustomerQueryResponse {
+  string answer = 1;
+}
+
+message LLMProducerQueryRequest {
+  string query = 1;
+  string token = 2;
+}
+
+message LLMProducerQueryResponse {
+  string answer = 1;
+}
+
+// =============================
+// NEW: ITEM STATS FOR LLM
+// =============================
+message GetItemStatsRequest {
+  string item_id = 1;
+  string token = 2;
+}
+
+message GetItemStatsResponse {
+  Item item = 1;
+  double average_daily_sales = 2;
+  int32 total_units_sold = 3;
+  double total_sales = 4;
+}
+
+// =============================
+// DELETE ITEM
+// =============================
+message DeleteItemRequest {
+  string id = 1;
+  string token = 2;
+}
+
+message DeleteItemResponse {
+  string message = 1;
+}
+
+// =============================
+// SERVICE
+// =============================
+service InventoryService {
+  // Auth
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  // Customer RPCs
+  rpc GetAllItems(GetAllRequest) returns (GetAllResponse);
+  rpc GetItem(GetItemRequest) returns (GetItemResponse);
+  rpc OrderItem(OrderItemRequest) returns (OrderItemResponse);
+  rpc LLMCustomerQuery(LLMCustomerQueryRequest) returns (LLMCustomerQueryResponse);
+
+  // Producer RPCs
+  rpc AddItem(AddItemRequest) returns (AddItemResponse);
+  rpc UpdateItem(UpdateItemRequest) returns (UpdateItemResponse);
+  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);   // ✅ Added correctly
+  rpc LLMProducerQuery(LLMProducerQueryRequest) returns (LLMProducerQueryResponse);
+
+  // NEW: Stats for LLM
+  rpc GetItemStats(GetItemStatsRequest) returns (GetItemStatsResponse);
+}

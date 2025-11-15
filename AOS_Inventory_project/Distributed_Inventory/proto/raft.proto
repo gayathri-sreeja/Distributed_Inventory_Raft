@@ -1,0 +1,41 @@
+syntax = "proto3";
+package raft;
+
+service RaftService {
+  rpc RequestVote(RequestVoteRequest) returns (RequestVoteResponse);
+  rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
+}
+
+message LogEntry {
+  int64 index = 1;
+  int64 term = 2;
+  string command_type = 3;   // e.g., "AddItem", "UpdateQty"
+  bytes command_bytes = 4;   // serialized payload
+}
+
+message RequestVoteRequest {
+  int64 term = 1;
+  string candidate_id = 2;
+  int64 last_log_index = 3;
+  int64 last_log_term = 4;
+}
+
+message RequestVoteResponse {
+  int64 term = 1;
+  bool vote_granted = 2;
+}
+
+message AppendEntriesRequest {
+  int64 term = 1;
+  string leader_id = 2;
+  int64 prev_log_index = 3;
+  int64 prev_log_term = 4;
+  repeated LogEntry entries = 5; // empty for heartbeat
+  int64 leader_commit = 6;
+}
+
+message AppendEntriesResponse {
+  int64 term = 1;
+  bool success = 2;
+  int64 match_index = 3; // follower’s highest replicated index on success
+}
